@@ -1,5 +1,6 @@
-package com.wisdomleaf.assignment.Controller;
+package com.wisdomleaf.assignment.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,32 +8,29 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.wisdomleaf.assignment.model.ResponseData;
 import com.wisdomleaf.assignment.model.Time;
+import com.wisdomleaf.assignment.service.TimeService;
 
 @RestController
 @RequestMapping("/parseTime")
-public class TimeController {
+public class TimeController extends BaseController {
+
+	@Autowired
+	private TimeService timeService;
 
 	@GetMapping("/{timeInput}")
-	public ResponseEntity<Time> parseTime(@PathVariable String timeInput) {
+	public ResponseEntity<ResponseData> parseTime(@PathVariable String timeInput) {
 		try {
-			int[] time = parseTimeInput(timeInput);
+			int[] time = timeService.parseTimeInput(timeInput);
 			Time parsedTime = new Time(time[0], time[1]);
-			return ResponseEntity.ok(parsedTime);
+			return super.commonApiResponse(parsedTime, HttpStatus.OK, "Time formate validation check done");
+
 		} catch (Exception e) {
 			// Handle parsing errors
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+			return super.requestValidate(HttpStatus.BAD_REQUEST,
+					"Invalid input");
 		}
 	}
 
-	private int[] parseTimeInput(String timeInput) {
-		try {
-			String[] parts = timeInput.split(":");
-			int hours = Integer.parseInt(parts[0]);
-			int minutes = Integer.parseInt(parts[1]);
-			return new int[] { hours, minutes };
-		} catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-			throw new IllegalArgumentException("Invalid input format. Please enter time in the format 'HH:mm'.");
-		}
-	}
 }

@@ -17,11 +17,13 @@ import lombok.ToString;
 public class Time {
 	private int hours;
 	private int minutes;
+	private String timetype;
+	private String timeInWord;
 
-	/*
-	 * public Time(int hours, int minutes) { this.hours = hours; this.minutes =
-	 * minutes; }
-	 */
+	public Time(int hours, int minutes) {
+		this.hours = hours;
+		this.minutes = minutes;
+	}
 
 	@Override
 	public String toString() {
